@@ -28,3 +28,22 @@ int pthread_detach(pthread_t thread)；
 ```
 
 **当pthread_detach重复调用已经释放过的pthread_t会出现问题**
+
+
+- 线程属性初始化和销毁
+
+``` c		
+  
+int pthread_attr_init(pthread_attr_t *attr);
+
+功能：该函数初始化默认的线程属性值，可以被用于多个的pthread_create，已经调用过的pthread_attr_init函数的线程属性不能重复挑用pthread_attr_init函数
+返回值：0-成功 失败
+
+int pthread_attr_destroy(pthread_attr_t *attr);
+
+功能：当该线程属性值不再需要时，使用pthread_attr_destroy函数释放。
+
+返回值：0-成功 失败
+		
+```
+		
