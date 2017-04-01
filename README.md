@@ -31,7 +31,6 @@ int pthread_detach(pthread_t thread)；
 
 
 - 线程属性初始化和销毁
-
 ``` c		
   
 int pthread_attr_init(pthread_attr_t *attr);
