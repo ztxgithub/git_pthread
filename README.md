@@ -37,6 +37,7 @@ int pthread_attr_init(pthread_attr_t *attr);
 
 功能：该函数初始化默认的线程属性值，可以被用于多个的pthread_create，已经调用过的pthread_attr_init函数的线程属性
 不能重复挑用pthread_attr_init函数
+
 返回值：0-成功 失败
 
 int pthread_attr_destroy(pthread_attr_t *attr);
