@@ -8,11 +8,11 @@
 
 - 获取当前线程的id
 
-``` c
+` c
 
 pthread_t pthread_self(void)
 
-```
+`
 
 返回值和int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
                           void *(*start_routine) (void *), void *arg)中的 *thread是一样的
