@@ -8,7 +8,7 @@
 
 - 获取当前线程的id
 
-```
+``` c
 
 pthread_t pthread_self(void)
 
@@ -19,7 +19,7 @@ pthread_t pthread_self(void)
 						  
 - 当线程结束时释放对应的资源
 
-```			  
+``` c		  
 int pthread_detach(pthread_t thread)；
 
 返回值：0-成功 失败
