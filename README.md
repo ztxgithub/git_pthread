@@ -6,7 +6,7 @@
 
 ## 线程的基本知识
 
--获取当前线程的id
+- 获取当前线程的id
 
 ```
 
@@ -17,7 +17,7 @@ pthread_t pthread_self(void)
 返回值和int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
                           void *(*start_routine) (void *), void *arg)中的 *thread是一样的
 						  
--当线程结束时释放对应的资源
+- 当线程结束时释放对应的资源
 
 ```			  
 		int pthread_detach(pthread_t thread)；
