@@ -20,8 +20,9 @@ pthread_t pthread_self(void)
 - 当线程结束时释放对应的资源
 
 ```			  
-		int pthread_detach(pthread_t thread)；
-		返回值：0-成功 失败
+int pthread_detach(pthread_t thread)；
+
+返回值：0-成功 失败
 		
 ```
 
