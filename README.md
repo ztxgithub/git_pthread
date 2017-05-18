@@ -12,7 +12,7 @@
 
 ``` c
 
-pthread_t pthread_self(void)
+	pthread_t pthread_self(void)
 
 ```
 
@@ -22,10 +22,12 @@ pthread_t pthread_self(void)
   			
 - 当线程结束时释放对应的资源
 
-``` c		  
-int pthread_detach(pthread_t thread)；
+``` c	
+	  
+	int pthread_detach(pthread_t thread)；
 
-返回值：0-成功 失败
+	返回值：0-成功 失败
+
 		
 ```
 
@@ -35,18 +37,18 @@ int pthread_detach(pthread_t thread)；
 - 线程属性初始化和销毁
 ``` c		
   
-int pthread_attr_init(pthread_attr_t *attr);
+	int pthread_attr_init(pthread_attr_t *attr);
 
-功能：该函数初始化默认的线程属性值，可以被用于多个的pthread_create，已经调用过的pthread_attr_init函数的线程属性
-不能重复挑用pthread_attr_init函数
+	功能：该函数初始化默认的线程属性值，可以被用于多个的pthread_create函数使用，已经调用过的pthread_attr_init函数的线程属性变量
+	不能重复调用pthread_attr_init函数
 
-返回值：0-成功 失败
+	返回值：0-成功 失败
 
-int pthread_attr_destroy(pthread_attr_t *attr);
+	int pthread_attr_destroy(pthread_attr_t *attr);
 
-功能：当该线程属性值不再需要时，使用pthread_attr_destroy函数释放。
+	功能：当该线程属性值不再需要时，使用pthread_attr_destroy函数释放,而且不会影响之前调用pthread_create函数要用到的该attr线程属性的线程，使用已经调用pthread_attr_destroy函数的线程属性会引发未知错误，已经调用过的pthread_attr_destroy函数的线程属性变量不能重复调用pthread_attr_destroy函数
 
-返回值：0-成功 失败
+	返回值：0-成功 失败
 		
 ```
 		
