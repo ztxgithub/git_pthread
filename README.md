@@ -6,7 +6,15 @@
 
 - 在每个线程还没有结束时，main函数不能结束
 
-## 线程的基本知识
+## 线程的函数接口
+
+- 创建线程
+
+``` c
+
+	int pthread_create(pthread_t *thread, const pthread_attr_t *attr，void *(*start_routine) (void *), void *arg);
+
+```
 
 - 获取当前线程的id
 
@@ -35,6 +43,7 @@
 
 
 - 线程属性初始化和销毁
+
 ``` c		
   
 	int pthread_attr_init(pthread_attr_t *attr);
@@ -51,4 +60,11 @@
 	返回值：0-成功 失败
 		
 ```
+
+- 获取特定线程的属性信息
+
+``` c		
+  
+	int pthread_getattr_np(pthread_t thread, pthread_attr_t *attr);
 		
+```
