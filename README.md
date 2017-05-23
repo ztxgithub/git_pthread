@@ -34,7 +34,11 @@
 	  
 	int pthread_detach(pthread_t thread)；
 
-	返回值：0-成功 失败
+	返回值：
+	    0-成功 失败
+	    
+	    
+	int pthread_join(pthread_t thread, void **retval);
 
 		
 ```
@@ -61,10 +65,38 @@
 		
 ```
 
-- 获取特定线程的属性信息
+- 获取特定线程的完整的属性信息
 
 ``` c		
   
 	int pthread_getattr_np(pthread_t thread, pthread_attr_t *attr);
+	
+	参数：
+	    thread：要获取特定线程的pthread_t
+	    attr：属性信息,调用该函数后,*attr会被赋值
+	    
+	返回值：
+	    0-成功 失败
+	
+	说明:
+	    不能看main主线程的属性信息,当pthread_getattr_np函数获取的属性信息不再使用时,注意应该要pthread_attr_destroy()该属性信息
+		
+```
+
+- 获取和设置分离状态属性(get and set the detachstate attribute)
+
+``` c		
+  
+	int pthread_getattr_np(pthread_t thread, pthread_attr_t *attr);
+	
+	参数：
+	    thread：要获取特定线程的pthread_t
+	    attr：属性信息,调用该函数后,*attr会被赋值
+	    
+	返回值：
+	    0-成功 失败
+	
+	说明:
+	    不能看main主线程的属性信息,当pthread_getattr_np函数获取的属性信息不再使用时,注意应该要pthread_attr_destroy()该属性信息
 		
 ```
