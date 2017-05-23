@@ -59,7 +59,11 @@
 
 	int pthread_attr_destroy(pthread_attr_t *attr);
 
-	功能：当该线程属性值不再需要时，使用pthread_attr_destroy函数释放,而且不会影响之前调用pthread_create函数要用到的该attr线程属性的线程，使用已经调用pthread_attr_destroy函数的线程属性会引发未知错误，已经调用过的pthread_attr_destroy函数的线程属性变量不能重复调用pthread_attr_destroy函数
+	功能：
+	  当该线程属性值不再需要时，使用pthread_attr_destroy函数释放,
+	而且不会影响之前调用pthread_create函数要用到的该attr线程属性的线程，
+	使用已经调用pthread_attr_destroy函数的线程属性会引发未知错误，
+	已经调用过的pthread_attr_destroy函数的线程属性变量不能重复调用pthread_attr_destroy函数
 
 	返回值：0-成功 失败
 		
