@@ -22,12 +22,10 @@
 
 	pthread_t pthread_self(void)
 
+    返回值和pthread_create函数中的 *thread是一样的
+    
 ```
-
-返回值和int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-                          void *(*start_routine) (void *), void *arg)中的 *thread是一样的
-			
-  			
+				
 - 当线程结束时释放对应的资源
 
 ``` c	
@@ -55,7 +53,8 @@
 	功能：该函数初始化默认的线程属性值，可以被用于多个的pthread_create函数使用，已经调用过的pthread_attr_init函数的线程属性变量
 	不能重复调用pthread_attr_init函数
 
-	返回值：0-成功 失败
+	返回值：
+	     0-成功 失败
 
 	int pthread_attr_destroy(pthread_attr_t *attr);
 
@@ -65,7 +64,8 @@
 	使用已经调用pthread_attr_destroy函数的线程属性会引发未知错误，
 	已经调用过的pthread_attr_destroy函数的线程属性变量不能重复调用pthread_attr_destroy函数
 
-	返回值：0-成功 失败
+	返回值：
+	     0-成功 失败
 		
 ```
 
