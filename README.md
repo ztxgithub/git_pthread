@@ -31,9 +31,19 @@
 ``` c	
 	  
 	int pthread_detach(pthread_t thread)；
+	
+	功能:
+	    当pthread_detach()函数指定某个特定的线程ID时,该线程ID结束时会自动将资源释放归放给系统,可以不需要调用pthread_join()阻塞等待
+	    指定的线程结束并释放资源
+	    
+	注意:
+	    一旦调用pthread_detach()函数后,指定的线程ID不允许再作为参数传到pthread_join()函数中.一个应用程序不断创建没有while的线程时
+	    (该线程只执行一次且很快执行完),应该要调用pthread_detach()或者pthread_join()函数.当进程终止时,所有线程的资源都将被释放.
 
 	返回值：
-	    0-成功 失败
+	    0: 成功 失败
+	    EINVAL: 指定的线程不是joinable 线程
+        ESRCH: 不存在pthread_t指定的ID
 	    
 	    
 	int pthread_join(pthread_t thread, void **retval);
