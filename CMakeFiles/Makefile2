@@ -60,39 +60,39 @@ CMAKE_SOURCE_DIR = /home/jame/share_user/git_pthread
 CMAKE_BINARY_DIR = /home/jame/share_user/git_pthread
 
 #=============================================================================
-# Target rules for target CMakeFiles/git_pthread.dir
+# Target rules for target CMakeFiles/pthread.dir
 
 # All Build rule for target.
-CMakeFiles/git_pthread.dir/all:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/depend
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jame/share_user/git_pthread/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target git_pthread"
-.PHONY : CMakeFiles/git_pthread.dir/all
+CMakeFiles/pthread.dir/all:
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/depend
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jame/share_user/git_pthread/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target pthread"
+.PHONY : CMakeFiles/pthread.dir/all
 
 # Include target in all.
-all: CMakeFiles/git_pthread.dir/all
+all: CMakeFiles/pthread.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/git_pthread.dir/rule: cmake_check_build_system
+CMakeFiles/pthread.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jame/share_user/git_pthread/CMakeFiles 9
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/git_pthread.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/pthread.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jame/share_user/git_pthread/CMakeFiles 0
-.PHONY : CMakeFiles/git_pthread.dir/rule
+.PHONY : CMakeFiles/pthread.dir/rule
 
 # Convenience name for target.
-git_pthread: CMakeFiles/git_pthread.dir/rule
+pthread: CMakeFiles/pthread.dir/rule
 
-.PHONY : git_pthread
-
-# clean rule for target.
-CMakeFiles/git_pthread.dir/clean:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/clean
-.PHONY : CMakeFiles/git_pthread.dir/clean
+.PHONY : pthread
 
 # clean rule for target.
-clean: CMakeFiles/git_pthread.dir/clean
+CMakeFiles/pthread.dir/clean:
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/clean
+.PHONY : CMakeFiles/pthread.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/pthread.dir/clean
 
 .PHONY : clean
 

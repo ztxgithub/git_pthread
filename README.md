@@ -37,6 +37,22 @@
 	    
 	    
 	int pthread_join(pthread_t thread, void **retval);
+	
+	功能：
+	    pthread_join()函数等待指定的线程终止.如果线程已经终止,那么pthread_join()会立即返回,但是pthread_join()函数指定的线程必须
+	    是可连接的(joinable),如果retval不为NULL,那么pthread_join()将指定线程的退出状态
+	    (即指定线程提供给pthread_exit(void *retval)的值) 复制到retval指向的位置。 如果目标线程被取消，则PTHREAD_CANCELED被赋值到
+	    retval指向的位置,如果多个线程同时调用pthread_join()且指定的pthread_t是同一个的话会程序会出错.
+	    
+	用法:
+	    调用pthread_join()函数会一直阻塞直到指定的线程执行完
+	    
+	返回值:
+	    0:成功
+	    EDEADLK: 线程死锁,例如２个线程相互调用pthread_join(),或者pthread_join()指定的参数是自己
+	    EINVAL: 指定的线程不是joinable 线程,另外的线程已经调用pthread_join()指定它了(重复调用同一个线程)
+	    ESRCH: 不存在pthread_t指定的ID
+	    
 
 		
 ```

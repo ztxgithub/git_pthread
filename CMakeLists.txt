@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(git_pthread)
+project(pthread)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -35,5 +35,5 @@ set(LIBRARIES
 )
 
 
-add_executable(git_pthread ${SOURCE_FILES})
-target_link_libraries(git_pthread ${LIBRARIES})
+add_executable(pthread ${SOURCE_FILES})
+target_link_libraries(pthread ${LIBRARIES})

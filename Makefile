@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named git_pthread
+# Target rules for targets named pthread
 
 # Build rule for target.
-git_pthread: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 git_pthread
-.PHONY : git_pthread
+pthread: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 pthread
+.PHONY : pthread
 
 # fast build rule for target.
-git_pthread/fast:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/build
-.PHONY : git_pthread/fast
+pthread/fast:
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/build
+.PHONY : pthread/fast
 
 easylogger/elog.o: easylogger/elog.c.o
 
@@ -129,7 +129,7 @@ easylogger/elog.o: easylogger/elog.c.o
 
 # target to build an object file
 easylogger/elog.c.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog.c.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog.c.o
 .PHONY : easylogger/elog.c.o
 
 easylogger/elog.i: easylogger/elog.c.i
@@ -138,7 +138,7 @@ easylogger/elog.i: easylogger/elog.c.i
 
 # target to preprocess a source file
 easylogger/elog.c.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog.c.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog.c.i
 .PHONY : easylogger/elog.c.i
 
 easylogger/elog.s: easylogger/elog.c.s
@@ -147,7 +147,7 @@ easylogger/elog.s: easylogger/elog.c.s
 
 # target to generate assembly for a file
 easylogger/elog.c.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog.c.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog.c.s
 .PHONY : easylogger/elog.c.s
 
 easylogger/elog_port.o: easylogger/elog_port.c.o
@@ -156,7 +156,7 @@ easylogger/elog_port.o: easylogger/elog_port.c.o
 
 # target to build an object file
 easylogger/elog_port.c.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog_port.c.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog_port.c.o
 .PHONY : easylogger/elog_port.c.o
 
 easylogger/elog_port.i: easylogger/elog_port.c.i
@@ -165,7 +165,7 @@ easylogger/elog_port.i: easylogger/elog_port.c.i
 
 # target to preprocess a source file
 easylogger/elog_port.c.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog_port.c.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog_port.c.i
 .PHONY : easylogger/elog_port.c.i
 
 easylogger/elog_port.s: easylogger/elog_port.c.s
@@ -174,7 +174,7 @@ easylogger/elog_port.s: easylogger/elog_port.c.s
 
 # target to generate assembly for a file
 easylogger/elog_port.c.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog_port.c.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog_port.c.s
 .PHONY : easylogger/elog_port.c.s
 
 easylogger/elog_utils.o: easylogger/elog_utils.c.o
@@ -183,7 +183,7 @@ easylogger/elog_utils.o: easylogger/elog_utils.c.o
 
 # target to build an object file
 easylogger/elog_utils.c.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog_utils.c.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog_utils.c.o
 .PHONY : easylogger/elog_utils.c.o
 
 easylogger/elog_utils.i: easylogger/elog_utils.c.i
@@ -192,7 +192,7 @@ easylogger/elog_utils.i: easylogger/elog_utils.c.i
 
 # target to preprocess a source file
 easylogger/elog_utils.c.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog_utils.c.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog_utils.c.i
 .PHONY : easylogger/elog_utils.c.i
 
 easylogger/elog_utils.s: easylogger/elog_utils.c.s
@@ -201,7 +201,7 @@ easylogger/elog_utils.s: easylogger/elog_utils.c.s
 
 # target to generate assembly for a file
 easylogger/elog_utils.c.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/elog_utils.c.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/elog_utils.c.s
 .PHONY : easylogger/elog_utils.c.s
 
 easylogger/log.o: easylogger/log.cpp.o
@@ -210,7 +210,7 @@ easylogger/log.o: easylogger/log.cpp.o
 
 # target to build an object file
 easylogger/log.cpp.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/log.cpp.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/log.cpp.o
 .PHONY : easylogger/log.cpp.o
 
 easylogger/log.i: easylogger/log.cpp.i
@@ -219,7 +219,7 @@ easylogger/log.i: easylogger/log.cpp.i
 
 # target to preprocess a source file
 easylogger/log.cpp.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/log.cpp.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/log.cpp.i
 .PHONY : easylogger/log.cpp.i
 
 easylogger/log.s: easylogger/log.cpp.s
@@ -228,7 +228,7 @@ easylogger/log.s: easylogger/log.cpp.s
 
 # target to generate assembly for a file
 easylogger/log.cpp.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/easylogger/log.cpp.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/easylogger/log.cpp.s
 .PHONY : easylogger/log.cpp.s
 
 main.o: main.cpp.o
@@ -237,7 +237,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/main.cpp.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -246,7 +246,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/main.cpp.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -255,7 +255,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/main.cpp.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 src/dump_core.o: src/dump_core.cpp.o
@@ -264,7 +264,7 @@ src/dump_core.o: src/dump_core.cpp.o
 
 # target to build an object file
 src/dump_core.cpp.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/dump_core.cpp.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/dump_core.cpp.o
 .PHONY : src/dump_core.cpp.o
 
 src/dump_core.i: src/dump_core.cpp.i
@@ -273,7 +273,7 @@ src/dump_core.i: src/dump_core.cpp.i
 
 # target to preprocess a source file
 src/dump_core.cpp.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/dump_core.cpp.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/dump_core.cpp.i
 .PHONY : src/dump_core.cpp.i
 
 src/dump_core.s: src/dump_core.cpp.s
@@ -282,7 +282,7 @@ src/dump_core.s: src/dump_core.cpp.s
 
 # target to generate assembly for a file
 src/dump_core.cpp.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/dump_core.cpp.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/dump_core.cpp.s
 .PHONY : src/dump_core.cpp.s
 
 src/pthread_template.o: src/pthread_template.cpp.o
@@ -291,7 +291,7 @@ src/pthread_template.o: src/pthread_template.cpp.o
 
 # target to build an object file
 src/pthread_template.cpp.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/pthread_template.cpp.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/pthread_template.cpp.o
 .PHONY : src/pthread_template.cpp.o
 
 src/pthread_template.i: src/pthread_template.cpp.i
@@ -300,7 +300,7 @@ src/pthread_template.i: src/pthread_template.cpp.i
 
 # target to preprocess a source file
 src/pthread_template.cpp.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/pthread_template.cpp.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/pthread_template.cpp.i
 .PHONY : src/pthread_template.cpp.i
 
 src/pthread_template.s: src/pthread_template.cpp.s
@@ -309,7 +309,7 @@ src/pthread_template.s: src/pthread_template.cpp.s
 
 # target to generate assembly for a file
 src/pthread_template.cpp.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/pthread_template.cpp.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/pthread_template.cpp.s
 .PHONY : src/pthread_template.cpp.s
 
 src/time_operate.o: src/time_operate.cpp.o
@@ -318,7 +318,7 @@ src/time_operate.o: src/time_operate.cpp.o
 
 # target to build an object file
 src/time_operate.cpp.o:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/time_operate.cpp.o
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/time_operate.cpp.o
 .PHONY : src/time_operate.cpp.o
 
 src/time_operate.i: src/time_operate.cpp.i
@@ -327,7 +327,7 @@ src/time_operate.i: src/time_operate.cpp.i
 
 # target to preprocess a source file
 src/time_operate.cpp.i:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/time_operate.cpp.i
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/time_operate.cpp.i
 .PHONY : src/time_operate.cpp.i
 
 src/time_operate.s: src/time_operate.cpp.s
@@ -336,7 +336,7 @@ src/time_operate.s: src/time_operate.cpp.s
 
 # target to generate assembly for a file
 src/time_operate.cpp.s:
-	$(MAKE) -f CMakeFiles/git_pthread.dir/build.make CMakeFiles/git_pthread.dir/src/time_operate.cpp.s
+	$(MAKE) -f CMakeFiles/pthread.dir/build.make CMakeFiles/pthread.dir/src/time_operate.cpp.s
 .PHONY : src/time_operate.cpp.s
 
 # Help Target
@@ -347,7 +347,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... git_pthread"
+	@echo "... pthread"
 	@echo "... easylogger/elog.o"
 	@echo "... easylogger/elog.i"
 	@echo "... easylogger/elog.s"

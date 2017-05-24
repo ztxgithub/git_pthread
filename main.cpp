@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include "time_operate.h"
 #include "pthread_template.h"
+#include "log.h"
 
 #define FUNC_SUCCESS 0
 #define FUNC_FAIL 1
@@ -117,6 +118,13 @@ static void *thread_start(void *arg)
     exit(EXIT_SUCCESS);         /* Terminate all threads */
 }
 
+static void *thread_sleep_join(void *arg)
+{
+    sleep(10);
+    printf("sleep 10s,end\n");
+//    exit(EXIT_SUCCESS);         /* Terminate all threads */
+}
+
 int main(int argc, char *argv[])
 {
     pthread_t thr;
@@ -162,6 +170,7 @@ int main(int argc, char *argv[])
     }
 
     s = pthread_create(&thr, attrp, &thread_start, NULL);
+
     if (s != 0)
         handle_error_en(s, "pthread_create");
 
@@ -171,5 +180,9 @@ int main(int argc, char *argv[])
             handle_error_en(s, "pthread_attr_destroy");
     }
 
-    pause();    /* Terminates when other thread calls exit() */
+    pthread_join(thr, NULL);
+
+    printf("pthread_join end\n");
+
+//    pause();    /* Terminates when other thread calls exit() */
 }
