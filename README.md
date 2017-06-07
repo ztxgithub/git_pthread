@@ -78,8 +78,8 @@
   
 	int pthread_attr_init(pthread_attr_t *attr);
 
-	功能：该函数初始化默认的线程属性值，可以被用于多个的pthread_create函数使用，已经调用过的pthread_attr_init函数的线程属性变量
-	不能重复调用pthread_attr_init函数
+	功能：该函数初始化默认的线程属性值，可以被用于多个的pthread_create函数使用，
+	已经调用过的pthread_attr_init函数的线程属性变量不能重复调用pthread_attr_init函数
 
 	返回值：
 	     0-成功 
@@ -111,7 +111,8 @@
 	    0-成功 
 	
 	说明:
-	    不能看main主线程的属性信息,当pthread_getattr_np函数获取的属性信息不再使用时,注意应该要pthread_attr_destroy()该属性信息
+	    不能看main主线程的属性信息,当pthread_getattr_np函数获取的属性信息不再使用时,
+	    注意应该要pthread_attr_destroy()该属性信息
 		
 ```
 
@@ -124,7 +125,8 @@
       	参数：
       	    attr：属性信息,调用该函数后,*attr会被赋值
       	    detachstate：分离状态
-      	        PTHREAD_CREATE_DETACHED:分离态,当线程创建时使用该分离属性,则不需要调用pthread_detach()函数也可自动释放资源
+      	        PTHREAD_CREATE_DETACHED:分离态,当线程创建时使用该分离属性,
+      	                                       则不需要调用pthread_detach()函数也可自动释放资源
       	        PTHREAD_CREATE_JOINABLE: joinable state.
       	        线程创建时属性为NULL,默认时PTHREAD_CREATE_JOINABLE属性
       	    
@@ -163,8 +165,9 @@
       	    ENOTSUP： PTHREAD_SCOPE_PROCESS不支持该Linux版本
       	    
       	注意:
-      	    Linux 支持 PTHREAD_SCOPE_SYSTEM, 不一定支持 PTHREAD_SCOPE_PROCESS模式,需要验证,如果需要调用pthread_attr_setscope()
-      	    函数修改资源竞争范围属性使线程创建时生效,那一定得使用pthread_attr_setinheritsched()函数将 inherit-scheduler attribute
+      	    Linux 支持 PTHREAD_SCOPE_SYSTEM, 不一定支持 PTHREAD_SCOPE_PROCESS模式,需要验证,
+      	    如果需要调用pthread_attr_setscope() 函数修改资源竞争范围属性使线程创建时生效,
+      	    那一定得使用pthread_attr_setinheritsched()函数将 inherit-scheduler attribute
       	    设置为PTHREAD_EXPLICIT_SCHED.
       	    
       	
@@ -199,8 +202,9 @@
       	    ENOTSUP： PTHREAD_SCOPE_PROCESS不支持该Linux版本
       	    
       	注意:
-      	    Linux 支持 PTHREAD_SCOPE_SYSTEM, 不一定支持 PTHREAD_SCOPE_PROCESS模式,需要验证,如果需要调用pthread_attr_setscope()
-      	    函数修改资源竞争范围属性使线程创建时生效,那一定得使用pthread_attr_setinheritsched()函数将 inherit-scheduler attribute
+      	    Linux 支持 PTHREAD_SCOPE_SYSTEM, 不一定支持 PTHREAD_SCOPE_PROCESS模式,需要验证,
+      	    如果需要调用pthread_attr_setscope()函数修改资源竞争范围属性使线程创建时生效,
+      	    那一定得使用pthread_attr_setinheritsched()函数将 inherit-scheduler attribute
       	    设置为PTHREAD_EXPLICIT_SCHED.
       	    
       	bugs:As at glibc 2.8, if a thread attributes object is initialized using
@@ -211,7 +215,8 @@
                     object wrongly inherits its scheduling attributes from the creating
                     thread.(继承父进程)  This bug does not occur if either the scheduling policy or
                     scheduling priority attribute is explicitly set in the thread
-                    attributes object before calling pthread_create(3).如果通过pthread_attr_set*显式调用进行修改,就不会有这样的问题
+                    attributes object before calling pthread_create(3).
+                    如果通过pthread_attr_set*显式调用进行修改,就不会有这样的问题
       	    
       	
 	int pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inheritsched);
@@ -293,8 +298,8 @@
       	    0-成功 
    
       	注意:
-      	    如果stack address被设置(通过使用pthread_attr_setstack() or pthread_attr_setstackaddr()),那么guardsize
-      	    设置就没有用
+      	    如果stack address被设置(通过使用pthread_attr_setstack() or pthread_attr_setstackaddr()),
+      	    那么guardsize设置就没有用
       	    
       	    
 	 int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize);
@@ -314,8 +319,8 @@
   	  int posix_memalign(void **memptr, size_t alignment, size_t size);
   	 
   	    描述: 
-  	        该函数分配了size Byte内存,并将地址保存在 *menptr中,这个内存分配的地址一定是alignment的倍数,参数alignment一定是2的幂且
-  	        是 sizeof(void *)的倍数.
+  	        该函数分配了size Byte内存,并将地址保存在 *menptr中,这个内存分配的地址一定是alignment的倍数,
+  	        参数alignment一定是2的幂且是 sizeof(void *)的倍数.
   	        
   	    返回值:
   	          0:成功
@@ -333,7 +338,8 @@
   	 
       	   
       	 参数:
-      	    stackaddr:申请的内存地址,该地址要对齐,最好用 posix_memalign函数将其对齐在a page boundary (sysconf(_SC_PAGESIZE))
+      	    stackaddr:申请的内存地址,该地址要对齐,最好用 posix_memalign函数将其对齐
+      	               在a page boundary (sysconf(_SC_PAGESIZE))
       	    stacksize:最好是pagesize的整数倍
       	    
       	     
