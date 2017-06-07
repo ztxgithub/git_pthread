@@ -101,6 +101,8 @@ static void display_pthread_attr(pthread_attr_t *attr, char *prefix)
 
 static void *thread_start(void *arg)
 {
+    int stack[1024 * 1024 * 2 + 1024 * 256 + 1024 * 128 + 1024 * 64 + 1024 * 32] = {0,};
+
     int s;
     pthread_attr_t gattr;
 
@@ -115,7 +117,7 @@ static void *thread_start(void *arg)
     printf("Thread attributes:\n");
     display_pthread_attr(&gattr, "\t");
 
-    exit(EXIT_SUCCESS);         /* Terminate all threads */
+
 }
 
 static void *thread_sleep_join(void *arg)
@@ -180,9 +182,9 @@ int main(int argc, char *argv[])
             handle_error_en(s, "pthread_attr_destroy");
     }
 
-    pthread_join(thr, NULL);
 
     printf("pthread_join end\n");
 
+    while(1);
 //    pause();    /* Terminates when other thread calls exit() */
 }

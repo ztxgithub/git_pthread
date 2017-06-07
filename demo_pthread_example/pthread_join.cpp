@@ -1,3 +1,9 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+
 static void *thread_sleep_join(void *arg)
 {
     sleep(10);
@@ -15,7 +21,7 @@ int main(int argc, char *argv[])
     s = pthread_create(&thr, NULL, &thread_sleep_join, NULL);
 
     if (s != 0)
-        handle_error_en(s, "pthread_create");
+        printf("pthread_create");
 
     pthread_join(thr, NULL);  //阻塞等待指定的thr线程结束
 

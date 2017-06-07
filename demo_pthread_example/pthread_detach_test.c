@@ -26,6 +26,7 @@ int main (int argc, char *argv[])
 		}
 		sleep(1);
 	}
-	printf("\n¡ª main End ¡ª- \n");
+
+	printf(" main End - \n");
 	pthread_exit(NULL);
 }
