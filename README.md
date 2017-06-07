@@ -48,7 +48,7 @@
 	返回值：
 	    0: 成功 
 	    EINVAL: 指定的线程不是joinable 线程而是　detach　状态
-        ESRCH: 不存在pthread_t指定的ID
+	    ESRCH: 不存在pthread_t指定的ID
 	    
 	    
 	int pthread_join(pthread_t thread, void **retval);
