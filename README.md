@@ -16,11 +16,17 @@
 
 - 每个线程创建以后都应该调用 pthread_detach 函数，只有这样在线程结束的时候资源(线程的描述信息和stack,局部变量栈的容量)才能被释放
 
-- 在每个线程还没有结束时，main函数不能结束
+- 在每个线程还没有结束时，main函数不能结束,可通过在main中最后写pthread_exit(NULL),阻塞等待其他线程创建好完成.
 
 - 一个进程创建多个线程,那么多个线程将共用这个进程的栈大小(8M)以及其他资源
 
 - 创建线程时要注意最多的线程数量和线程栈大小
+
+## 编码技巧
+
+- 创建一个线程,如果要给线程传多个参数,则将这多个参数构成一个自定义的结构体,再将它传给线程
+
+- 需要调用pthread_join()函数时最好显式设置属性为joinable,并创建.为了移植性,并不是所有的系统都保证默认创建线程是joinable.
 
 ## 线程的函数接口
 
@@ -69,7 +75,7 @@
 	
 	功能：
 	    pthread_join()函数等待指定的线程终止.如果线程已经终止,那么pthread_join()会立即返回,
-	    但是pthread_join()函数指定的线程必须是可连接的(joinable),如果retval不为NULL,
+	    但是pthread_join()函数指定的线程必须是可连接的(joinable)不能是detached态,如果retval不为NULL,
 	    那么pthread_join()将指定线程的退出状态(即指定线程提供给pthread_exit(void *retval)的值) 
 	    复制到retval指向的位置。 如果目标线程被取消，则PTHREAD_CANCELED被赋值到retval指向的位置,
 	    如果多个线程同时调用pthread_join()且指定的pthread_t是同一个的话会程序会出错.
@@ -376,4 +382,40 @@
           	    0-成功 
         	
         							
+```
+
+## 线程的同步问题
+
+### 同步的基础知识
+
+- 条件变量
+
+``` c		
+    条件变量是利用线程间共享的全局变量进行同步的一种机制,一个线程要等待"条件变量成立"而阻塞,另一个线程
+    能够使条件变量成立.条件变量的使用总是和互斥锁结合在一起
+      							
+```
+
+- 条件变量的创建和注销
+
+``` c		
+
+    条件变量的创建：
+    1.静态创建方式初始化条件变量  pthread_cond_t   cond=PTHREAD_COND_INITIALIZER
+    
+    2.动态方式初始化条件变量 
+    int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr)
+    
+    参数：
+        cond:条件变量被赋值
+        cond_attr：通常为NULL. 因为LinuxThreads中没有实现
+      		
+      											
+      											
+   条件变量的注销
+   
+    int pthread_cond_destroy(pthread_cond_t *cond)  
+     
+    描述：
+        没有一个线程
 ```
