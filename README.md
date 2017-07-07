@@ -16,7 +16,7 @@
 
 - 每个线程创建以后都应该调用 pthread_detach 函数，只有这样在线程结束的时候资源(线程的描述信息和stack,局部变量栈的容量)才能被释放
 
-- 在每个线程还没有结束时，main函数不能结束,可通过在main中最后写pthread_exit(NULL),阻塞等待其他线程创建好完成.
+- 在每个线程还没有结束时，main函数不能结束(不能调用retrun或则_exit()),可通过在main中最后写pthread_exit(NULL),阻塞等待其他线程创建好完成.
 
 - 一个进程创建多个线程,那么多个线程将共用这个进程的栈大小(8M)以及其他资源
 
@@ -36,6 +36,9 @@
 
 	int pthread_create(pthread_t *thread, const pthread_attr_t *attr, 
 	                    void *(*start_routine) (void *), void *arg);
+	                    
+	返回值:
+	    0:成功
 
 ```
 
@@ -384,6 +387,67 @@
         							
 ```
 
+- 线程清理处理程序
+
+``` c		
+                 
+      
+  	   void pthread_cleanup_push(void (*routine)(void *), void *arg);
+  	   
+             描述：
+                线程可以建立多个清理处理程序。处理程序记录在栈中，也就是说它们的执行顺序与它们注册时的顺序相反(栈的先入后出)
+    	 
+        	   
+             参数:
+                void (*routine)(void *) : 函数名
+                arg:传入注册函数的参数
+        	    
+        	     
+       
+         
+            注意：
+                  只有当以下几种情况注册的函数才会被调用
+                      (1):调用pthread_exit.
+                      (2):作为对取消线程请求(pthread_cancel)的响应
+                      (3):以非0参数调用pthread_cleanup_pop.
+                      
+                  如果只是简单的return,该注册函数不会被调用
+        	
+      	    
+      	    
+	   void pthread_cleanup_pop(int execute)
+	   
+	        描述：调用该函数时将pthread_cleanup_push压入的注册函数弹出,根据execute参数的值看执不执行注册函数.
+	   
+	        参数: 
+	            0: 不执行清理函数
+	            非零: 执行清理函数
+	            
+
+	
+	 	返回值：
+          	    0-成功 
+          	    
+          	    
+       注意：
+                   phtread_cleanup_push 与 phread_cleanup_pop要成对儿的出现，否则会报错(不管最后注册函数有没有被调用,
+                    但phread_cleanup_pop函数一定要和phtread_cleanup_push函数数量一致，否则编译不通过)
+           
+                    
+       pthread_cleanup_push(pthread_mutex_unlock, (void *) &mut);
+       pthread_mutex_lock(&mut);
+       /* do some work */
+       pthread_mutex_unlock(&mut);
+       pthread_cleanup_pop(0);
+       
+       如果线程处于PTHREAD_CANCEL_ASYNCHRONOUS状态，上述代码段就有可能出错，
+       因为CANCEL事件有可能在pthread_cleanup_push()和pthread_mutex_lock()之间发生(这样会调用注册函数),
+       或者在pthread_mutex_unlock()和pthread_cleanup_pop()之间发生,从而导致清理函数unlock一个并没有加锁的mutex变量，造成错误。
+       因此应该暂时设置成PTHREAD_CANCEL_DEFERRED模式。
+        	
+        							
+```
+
 ## 线程的同步问题
 
 ### 同步的基础知识
@@ -417,5 +481,5 @@
     int pthread_cond_destroy(pthread_cond_t *cond)  
      
     描述：
-        没有一个线程
+        
 ```

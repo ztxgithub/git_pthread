@@ -30,5 +30,5 @@ int main(int argc, char *argv[])
     }
 
     /* Last thing that main() should do */
-    pthread_exit(NULL);
+    pthread_exit(NULL);  //阻塞等待其他线程结束
 }
