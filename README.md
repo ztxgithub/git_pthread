@@ -223,13 +223,7 @@
       	返回值：
       	    0-成功 失败
       	    EINVAL: 输入参数inheritsched为无效的值
-      	    ENOTSUP： PTHREAD_SCOPE_PROCESS不支持该Linux版本
-      	    
-      	注意:
-      	    Linux 支持 PTHREAD_SCOPE_SYSTEM, 不一定支持 PTHREAD_SCOPE_PROCESS模式,需要验证,
-      	    如果需要调用pthread_attr_setscope()函数修改资源竞争范围属性使线程创建时生效,
-      	    那一定得使用pthread_attr_setinheritsched()函数将 inherit-scheduler attribute
-      	    设置为PTHREAD_EXPLICIT_SCHED.
+      	    ENOTSUP： 输入参数inheritsched为无效的值
       	    
       	bugs:As at glibc 2.8, if a thread attributes object is initialized using
                     pthread_attr_init(3), then the scheduling policy of the attributes

@@ -20,7 +20,7 @@ int main (int argc, char *argv[])
 	while (1) {
 	
 		rc = pthread_create(&pid, NULL, PrintHello, NULL);
-		if (rc){
+		if (rc) {
 			printf("ERROR; return code from pthread_create() is %d\n", rc);
 			//exit(-1);
 		}
