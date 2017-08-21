@@ -444,6 +444,67 @@
 
 ## 线程的同步问题
 
+### 线程同步之互斥量(mutex)
+
+#### 互斥锁的概念
+
+``` c	
+
+    它是最基本的同步工具，用于保护临界区（共享资源）,以保证在任何时刻只有一个线程能够访问共享的资源。
+
+```
+#### 互斥锁的接口
+
+- 互斥量初始化和销毁
+
+``` c	
+
+    #include <pthread.h>
+    
+    int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr);
+    
+    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+    
+    描述:
+        对于动态分配的互斥量由于不能直接赋值进行初始化就只能采用pthread_mutex_init()函数进行初始化，
+        pthread_mutex_init()的第二个参数是互斥量的属性,如果采用默认的属性设置,可以传入NULL.
+        如果初始化成功,则 mutex 为unlocked状态
+        
+    参数:
+        mutex : pthread_mutex_t的指针,要被赋值
+        attr : mutex属性值,一般为NULL
+        
+    返回值:
+        0:成功
+        错误:
+            EAGAIN: 系统缺少必要的资源(除了内存)来初始化这个互斥量
+            ENOMEM: 内存不足
+            EBUSY: 
+            EINVAL: attr 属性无效
+    注意:
+        不能对相同mutex进行重复pthread_mutex_init()调用.
+    
+    
+    int pthread_mutex_destroy(pthread_mutex_t *mutex);
+    
+    描述:
+        当不在需要使用互斥量时，需要调用pthread_mutex_destroy()销毁互斥量所占用的资源.
+        
+    返回值:
+        0:成功
+        错误:
+            EBUSY: 互斥量还在使用(lock状态), while being used in a pthread_cond_wait() or
+                    pthread_cond_timedwait()) by another thread.
+            EINVAL: 指定的mutex无效 
+    注意:
+        在调用pthread_mutex_destroy()函数后,不能再使用mutex,否则会出现不可预知的错误.如果还想使用mutex,则
+        需要重新初始化该互斥量 pthread_mutex_destroy(). 要调用pthread_mutex_destroy()函数时,一定要确保
+        mutex 的状态为 unlocked, 如果 mutex 还在使用(处于locked状态),调用pthread_mutex_destroy()函数
+        会出问题.
+    
+
+```
+
 ### 同步的基础知识
 
 - 条件变量
