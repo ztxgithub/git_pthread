@@ -498,11 +498,39 @@
             EINVAL: 指定的mutex无效 
     注意:
         在调用pthread_mutex_destroy()函数后,不能再使用mutex,否则会出现不可预知的错误.如果还想使用mutex,则
-        需要重新初始化该互斥量 pthread_mutex_destroy(). 要调用pthread_mutex_destroy()函数时,一定要确保
+        需要重新初始化该互斥量 pthread_mutex_init(). 要调用pthread_mutex_destroy()函数时,一定要确保
         mutex 的状态为 unlocked, 如果 mutex 还在使用(处于locked状态),调用pthread_mutex_destroy()函数
         会出问题.
     
+```
 
+- 互斥量使用(加锁和解锁)
+
+``` c	
+
+   #include <pthread.h>
+   
+   int pthread_mutex_lock(pthread_mutex_t *mutex);
+   int pthread_mutex_trylock(pthread_mutex_t *mutex);
+   int pthread_mutex_unlock(pthread_mutex_t *mutex); 
+    
+    描述:
+        使用互斥量时采用的是默认的互斥量属性, pthread_mutex_trylock()是非阻塞等待,不管互斥量可不可以使用
+        pthread_mutex_trylock()都是立即返回,成功返回0.
+        
+    参数:
+        mutex :
+        
+    注意:
+       互斥量的正确使用流程应该是：线程占用互斥量,然后访问共享资源,最后释放互斥量。(你占用互斥量的时候就应该是临界资源可用)
+       而不应该是：线程占用互斥量，然后判断资源是否可用，如果不可用，释放互斥量，然后重复上述过程。这种行为称为轮转或轮询,
+       是一种浪费CPU时间的行为.
+        
+    返回值:
+        0:成功
+        错误:
+           
+    
 ```
 
 ### 同步的基础知识
@@ -510,8 +538,15 @@
 - 条件变量
 
 ``` c		
+
     条件变量是利用线程间共享的全局变量进行同步的一种机制,一个线程要等待"条件变量成立"而阻塞,另一个线程
     能够使条件变量成立.条件变量的使用总是和互斥锁结合在一起
+    
+    每个条件变量总是和一个互斥量相关联,条件本身是由互斥量保护的,
+    线程在改变条件状态之间必须要锁住互斥量. 条件变量相对于互斥量最大的优点在于允许线程以无竞争的方式等待条件的发生.
+    当一个线程获得互斥锁后，发现自己需要等待某个条件变为真，如果是这样，该线程就可以等待在某个条件上，
+    这样就不需要通过轮询的方式来判断添加，大大节省了CPU时间。
+    互斥量是用于上锁，条件变量用于等待；
       							
 ```
 
@@ -520,7 +555,7 @@
 ``` c		
 
     条件变量的创建：
-    1.静态创建方式初始化条件变量  pthread_cond_t   cond=PTHREAD_COND_INITIALIZER
+    1.静态创建方式初始化条件变量  pthread_cond_t  cond = PTHREAD_COND_INITIALIZER
     
     2.动态方式初始化条件变量 
     int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr)
@@ -537,4 +572,79 @@
      
     描述：
         
+```
+
+- 条件变量的使用
+
+``` c		
+
+    描述:
+        对条件变量的阻塞等待, 函数返回后要进行具体内容的判断(可能会出现pthread_cond_wait被意外唤醒)
+
+    int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)   
+    
+    描述:
+        等待条件变为真
+        pthread_cond_wait()函数用于阻塞等待条件被触发(另外线程调用pthread_cond_signal()函数).
+        该函数传入两个参数,一个条件变量一个互斥量,而且必须是一一对应,不能调用pthread_cond_wait()函数时
+        用多个不同的mutex对应同一个cond,否则会出问题的.
+        函数将条件变量和互斥量进行关联,互斥量对该条件进行保护,传入的互斥量必须是已经锁住的.
+        调用pthread_cond_wait()函数后，会原子的执行以下两个动作：
+                将调用线程放到等待条件的线程列表上，即进入睡眠(阻塞状态)；
+                对互斥量进行解锁；
+                
+         注意: 在开始调用pthread_cond_wait()函数后,且还没返回(一直在阻塞状态),这个情况下会对互斥量进行暂时解锁,
+         在pthread_cond_wait()函数成功返回后,则互斥量的状态时 locked 状态. 
+        由于这两个操作时原子操作,这样就关闭了条件检查和线程进入睡眠等待条件改变这两个操作之间的时间通道.
+        这样就不会错过任何条件的变化。
+        当pthread_cond_wait()返回后,互斥量会再次被锁住.
+        
+    返回值:
+        0:成功
+        
+        
+    int  pthread_cond_timedwait(pthread_cond_t  *cond, pthread_mutex_t  *mutex,   
+                                const struct timespec *abstime) ;
+                                
+    描述:
+        限时等待条件为真
+        pthread_cond_timedwait()函数和pthread_cond_wait()的工作方式相似,只是多了一个等待时间.
+        
+        struct timespec{  
+        time_t  tv_sec    //Seconds.  
+        long    tv_nsec   //Nanoseconds.  
+        };  
+        
+        函数要求传入的时间值是一个绝对值,不是相对值,例如，想要等待3分钟，必须先获得当前时间，然后加上3分钟.
+        
+        如果时间到后，条件还没有发生，那么会返回ETIMEDOUT错误。
+        
+    返回值:
+        0: 成功
+    
+        
+  向等待条件的线程发送唤醒信号
+  (These two functions are used to unblock threads blocked on a condition variable.):
+  
+    注意:
+        一定要在改变条件状态后，再给线程发送信号.一定要坚持使用广播发送pthread_cond_broadcast().
+        
+    int pthread_cond_signal(pthread_cond_t *cond);
+    
+    描述:
+        唤醒一个等待条件的线程
+        
+    返回值:
+        0: 成功
+        
+        
+    int pthread_cond_broadcast(pthread_cond_t *cond);
+    
+    描述:
+        唤醒等待该条件的所有线程
+        
+    返回值:
+         0: 成功
+        
+    
 ```

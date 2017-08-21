@@ -1,190 +1,131 @@
-#include <cstdint>
-#include <iostream>
-#include <vector>
-#include <getopt.h>
-#include <zconf.h>
-#include <fcntl.h>
-#include "time_operate.h"
-#include "pthread_template.h"
-#include "log.h"
-
-#define FUNC_SUCCESS 0
-#define FUNC_FAIL 1
-
-//time_t current_time(){
-//    return time(NULL);
-//}
-//
-//
-//int main() {
-//
-////    print_local_time();
-//
-//    //线程处理
-//    while(1) {
-//
-//        create_detached_attr_pthread();
-////        sleep(1);
-//
-//    }
-//
-//
-//    return 0;
-//}
-
-
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
+#include <pthread.h>
 
-#define handle_error_en(en, msg) \
-               do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+#define TH_POOL_SZ 10
+#define TH_NB_LOOP 100
 
-static void display_pthread_attr(pthread_attr_t *attr, char *prefix)
-{
-    int s, i;
-    size_t v;
-    void *stkaddr;
-    struct sched_param sp;
+static pthread_mutex_t th_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t th_cond = PTHREAD_COND_INITIALIZER;
 
-    s = pthread_attr_getdetachstate(attr, &i);
-    if (s != 0)
-        handle_error_en(s, "pthread_attr_getdetachstate");
-    printf("%sDetach state        = %s\n", prefix,
-           (i == PTHREAD_CREATE_DETACHED) ? "PTHREAD_CREATE_DETACHED" :
-           (i == PTHREAD_CREATE_JOINABLE) ? "PTHREAD_CREATE_JOINABLE" :
-           "???");
+typedef struct th_data {
+    int val;
+} th_data_t;
 
-    s = pthread_attr_getscope(attr, &i);
-    if (s != 0)
-        handle_error_en(s, "pthread_attr_getscope");
-    printf("%sScope               = %s\n", prefix,
-           (i == PTHREAD_SCOPE_SYSTEM)  ? "PTHREAD_SCOPE_SYSTEM" :
-           (i == PTHREAD_SCOPE_PROCESS) ? "PTHREAD_SCOPE_PROCESS" :
-           "???");
+static void *cons_runnable(void *arg) {
+    int i;
 
-    s = pthread_attr_getinheritsched(attr, &i);
-    if (s != 0)
-        handle_error_en(s, "pthread_attr_getinheritsched");
-    printf("%sInherit scheduler   = %s\n", prefix,
-           (i == PTHREAD_INHERIT_SCHED)  ? "PTHREAD_INHERIT_SCHED" :
-           (i == PTHREAD_EXPLICIT_SCHED) ? "PTHREAD_EXPLICIT_SCHED" :
-           "???");
+    for (i = 0; i < TH_NB_LOOP; i ++) {
+        if (pthread_mutex_lock(&th_lock) != 0) {
+            perror("Failed to lock mutex");
+            pthread_exit(NULL);
+        }
+        printf("Consumer locked.\n");
 
-    s = pthread_attr_getschedpolicy(attr, &i);
-    if (s != 0)
-        handle_error_en(s, "pthread_attr_getschedpolicy");
-    printf("%sScheduling policy   = %s\n", prefix,
-           (i == SCHED_OTHER) ? "SCHED_OTHER" :
-           (i == SCHED_FIFO)  ? "SCHED_FIFO" :
-           (i == SCHED_RR)    ? "SCHED_RR" :
-           "???");
+        th_data_t *data = (th_data_t *)arg;
+        while (data->val == 0) {
+            printf("Value null, consumer is waiting ...\n");
+            if (pthread_cond_wait(&th_cond, &th_lock) != 0) {
+                perror("Failed to wait on mutex");
+                pthread_exit(NULL);
+            }
+        }
+        printf("Consumer waked up.\n");
+        data->val --;
+        printf("Value decremented.\n");
 
-    s = pthread_attr_getschedparam(attr, &sp);
-    if (s != 0)
-        handle_error_en(s, "pthread_attr_getschedparam");
-    printf("%sScheduling priority = %d\n", prefix, sp.sched_priority);
+        if (pthread_mutex_unlock(&th_lock) != 0) {
+            perror("Failed to unlock mutex");
+            pthread_exit(NULL);
+        }
+        printf("Consumer unlocked.\n");
 
-    s = pthread_attr_getguardsize(attr, &v);
-    if (s != 0)
-        handle_error_en(s, "pthread_attr_getguardsize");
-    printf("%sGuard size          = %d bytes\n", prefix, v);
+        if (pthread_cond_signal(&th_cond) != 0) {
+            perror("Failed to signal other threads");
+            pthread_exit(NULL);
+        }
+        printf("Consumer signaled other threads\n");
 
-    s = pthread_attr_getstack(attr, &stkaddr, &v);
-    if (s != 0)
-        handle_error_en(s, "pthread_attr_getstack");
-    printf("%sStack address       = %p\n", prefix, stkaddr);
-    printf("%sStack size          = 0x%zx bytes\n", prefix, v);
-}
-
-static void *thread_start(void *arg)
-{
-    int stack[1024 * 1024 * 2 + 1024 * 256 + 1024 * 128 + 1024 * 64 + 1024 * 32] = {0,};
-
-    int s;
-    pthread_attr_t gattr;
-
-    /* pthread_getattr_np() is a non-standard GNU extension that
-       retrieves the attributes of the thread specified in its
-       first argument */
-
-    s = pthread_getattr_np(pthread_self(), &gattr);
-    if (s != 0)
-        handle_error_en(s, "pthread_getattr_np");
-
-    printf("Thread attributes:\n");
-    display_pthread_attr(&gattr, "\t");
-
-
-}
-
-static void *thread_sleep_join(void *arg)
-{
-    sleep(10);
-    printf("sleep 10s,end\n");
-//    exit(EXIT_SUCCESS);         /* Terminate all threads */
-}
-
-int main(int argc, char *argv[])
-{
-    pthread_t thr;
-    pthread_attr_t attr;
-    pthread_attr_t *attrp;      /* NULL or &attr */
-    int s;
-
-    attrp = NULL;
-
-    /* If a command-line argument was supplied, use it to set the
-       stack-size attribute and set a few other thread attributes,
-       and set attrp pointing to thread attributes object */
-
-    if (argc > 1) {
-        int stack_size;
-        void *sp;
-
-        attrp = &attr;
-
-        s = pthread_attr_init(&attr);
-        if (s != 0)
-            handle_error_en(s, "pthread_attr_init");
-
-        s = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-        if (s != 0)
-            handle_error_en(s, "pthread_attr_setdetachstate");
-
-        s = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
-        if (s != 0)
-            handle_error_en(s, "pthread_attr_setinheritsched");
-
-        stack_size = strtoul(argv[1], NULL, 0);
-
-        s = posix_memalign(&sp, sysconf(_SC_PAGESIZE), stack_size);
-        if (s != 0)
-            handle_error_en(s, "posix_memalign");
-
-        printf("posix_memalign() allocated at %p\n", sp);
-
-        s = pthread_attr_setstack(&attr, sp, stack_size);
-        if (s != 0)
-            handle_error_en(s, "pthread_attr_setstack");
     }
+    printf("Consumer terminated.\n");
+    pthread_exit(NULL);
+}
 
-    s = pthread_create(&thr, attrp, &thread_start, NULL);
+static void *prod_runnable(void *arg) {
+    int i;
 
-    if (s != 0)
-        handle_error_en(s, "pthread_create");
+    for (i = 0; i < TH_NB_LOOP; i ++) {
+        if (pthread_mutex_lock(&th_lock) != 0) {
+            perror("Failed to lock mutex");
+            pthread_exit(NULL);
+        }
+        printf("Producer locked.\n");
 
-    if (attrp != NULL) {
-        s = pthread_attr_destroy(attrp);
-        if (s != 0)
-            handle_error_en(s, "pthread_attr_destroy");
+        th_data_t *data = (th_data_t *)arg;
+        while (data->val == 1) {
+            printf("Value set, producer is waiting ...\n");
+            if (pthread_cond_wait(&th_cond, &th_lock) != 0) {
+                perror("Failed to wait on mutex");
+                pthread_exit(NULL);
+            }
+        }
+        printf("Producer waked up.\n");
+        data->val ++;
+        printf("Value incremented.\n");
+
+        if (pthread_mutex_unlock(&th_lock) != 0) {
+            perror("Failed to unlock mutex");
+            pthread_exit(NULL);
+        }
+        printf("Producer unlocked.\n");
+
+        if (pthread_cond_signal(&th_cond) != 0) {
+            perror("Failed to signal other threads");
+            pthread_exit(NULL);
+        }
+        printf("Producer signaled other threads.\n");
     }
+    printf("Producer terminated.\n");
+    pthread_exit(NULL);
+}
 
+int main (void) {
 
-    printf("pthread_join end\n");
+    int i;
+    th_data_t data;
 
-    while(1);
-//    pause();    /* Terminates when other thread calls exit() */
+    pthread_t th_pool_cons[TH_POOL_SZ];
+    pthread_t th_pool_prod[TH_POOL_SZ];
+    data.val = 0;
+
+    for (i = 0; i < TH_POOL_SZ; i ++) {
+        if (pthread_create(&th_pool_cons[i], NULL, cons_runnable, &data) != 0) {
+            perror("Failed to create consumer thread");
+            return -1;
+        }
+        if (pthread_create(&th_pool_prod[i], NULL, prod_runnable, &data) != 0) {
+            perror("Failed to create producer thread");
+            return -1;
+        }
+    }
+    printf("%d threads created.\n", TH_POOL_SZ * 2);
+
+    for (i = 0; i < TH_POOL_SZ; i ++) {
+        if (pthread_join(th_pool_cons[i], NULL) != 0) {
+            perror("Failed to join consumer thread");
+            return -1;
+        }
+    }
+    for (i = 0; i < TH_POOL_SZ; i ++) {
+        if (pthread_join(th_pool_prod[i], NULL) != 0) {
+            perror("Failed to join producer thread");
+            return -1;
+        }
+    }
+    printf("%d threads joined.\n", TH_POOL_SZ * 2);
+
+    printf("Final value of data: %d.\n", data.val);
+    printf("Fin.\n");
+    return 0;
 }
