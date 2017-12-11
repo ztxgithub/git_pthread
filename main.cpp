@@ -1,131 +1,117 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <semaphore.h>
+#include <errno.h>
 
-#define TH_POOL_SZ 10
-#define TH_NB_LOOP 100
+#define  return_if_fail(p)  if((p) == 0){printf ("[%s]:func error!/n", __func__);return;}
 
-static pthread_mutex_t th_lock = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t th_cond = PTHREAD_COND_INITIALIZER;
+typedef struct _PrivInfo
+{
+    sem_t s1;
+    sem_t s2;
+    time_t end_time;
+}PrivInfo;
 
-typedef struct th_data {
-    int val;
-} th_data_t;
+static void info_init (PrivInfo* thiz);
+static void info_destroy (PrivInfo* thiz);
+static void* pthread_func_1 (PrivInfo* thiz);
+static void* pthread_func_2 (PrivInfo* thiz);
 
-static void *cons_runnable(void *arg) {
-    int i;
+int main (int argc, char** argv)
+{
+    pthread_t pt_1 = 0;
+    pthread_t pt_2 = 0;
+    int ret = 0;
+    PrivInfo* thiz = NULL;
 
-    for (i = 0; i < TH_NB_LOOP; i ++) {
-        if (pthread_mutex_lock(&th_lock) != 0) {
-            perror("Failed to lock mutex");
-            pthread_exit(NULL);
-        }
-        printf("Consumer locked.\n");
-
-        th_data_t *data = (th_data_t *)arg;
-        while (data->val == 0) {
-            printf("Value null, consumer is waiting ...\n");
-            if (pthread_cond_wait(&th_cond, &th_lock) != 0) {
-                perror("Failed to wait on mutex");
-                pthread_exit(NULL);
-            }
-        }
-        printf("Consumer waked up.\n");
-        data->val --;
-        printf("Value decremented.\n");
-
-        if (pthread_mutex_unlock(&th_lock) != 0) {
-            perror("Failed to unlock mutex");
-            pthread_exit(NULL);
-        }
-        printf("Consumer unlocked.\n");
-
-        if (pthread_cond_signal(&th_cond) != 0) {
-            perror("Failed to signal other threads");
-            pthread_exit(NULL);
-        }
-        printf("Consumer signaled other threads\n");
-
+    thiz = (PrivInfo* )malloc (sizeof (PrivInfo));
+    if (thiz == NULL)
+    {
+        printf ("[%s]: Failed to malloc priv./n");
+        return -1;
     }
-    printf("Consumer terminated.\n");
-    pthread_exit(NULL);
-}
 
-static void *prod_runnable(void *arg) {
-    int i;
+    info_init (thiz);
 
-    for (i = 0; i < TH_NB_LOOP; i ++) {
-        if (pthread_mutex_lock(&th_lock) != 0) {
-            perror("Failed to lock mutex");
-            pthread_exit(NULL);
-        }
-        printf("Producer locked.\n");
-
-        th_data_t *data = (th_data_t *)arg;
-        while (data->val == 1) {
-            printf("Value set, producer is waiting ...\n");
-            if (pthread_cond_wait(&th_cond, &th_lock) != 0) {
-                perror("Failed to wait on mutex");
-                pthread_exit(NULL);
-            }
-        }
-        printf("Producer waked up.\n");
-        data->val ++;
-        printf("Value incremented.\n");
-
-        if (pthread_mutex_unlock(&th_lock) != 0) {
-            perror("Failed to unlock mutex");
-            pthread_exit(NULL);
-        }
-        printf("Producer unlocked.\n");
-
-        if (pthread_cond_signal(&th_cond) != 0) {
-            perror("Failed to signal other threads");
-            pthread_exit(NULL);
-        }
-        printf("Producer signaled other threads.\n");
+    ret = pthread_create (&pt_1, NULL, (void*)pthread_func_1, thiz);
+    if (ret != 0)
+    {
+        perror ("pthread_1_create:");
     }
-    printf("Producer terminated.\n");
-    pthread_exit(NULL);
-}
 
-int main (void) {
-
-    int i;
-    th_data_t data;
-
-    pthread_t th_pool_cons[TH_POOL_SZ];
-    pthread_t th_pool_prod[TH_POOL_SZ];
-    data.val = 0;
-
-    for (i = 0; i < TH_POOL_SZ; i ++) {
-        if (pthread_create(&th_pool_cons[i], NULL, cons_runnable, &data) != 0) {
-            perror("Failed to create consumer thread");
-            return -1;
-        }
-        if (pthread_create(&th_pool_prod[i], NULL, prod_runnable, &data) != 0) {
-            perror("Failed to create producer thread");
-            return -1;
-        }
+    ret = pthread_create (&pt_2, NULL, (void*)pthread_func_2, thiz);
+    if (ret != 0)
+    {
+        perror ("pthread_2_create:");
     }
-    printf("%d threads created.\n", TH_POOL_SZ * 2);
 
-    for (i = 0; i < TH_POOL_SZ; i ++) {
-        if (pthread_join(th_pool_cons[i], NULL) != 0) {
-            perror("Failed to join consumer thread");
-            return -1;
-        }
-    }
-    for (i = 0; i < TH_POOL_SZ; i ++) {
-        if (pthread_join(th_pool_prod[i], NULL) != 0) {
-            perror("Failed to join producer thread");
-            return -1;
-        }
-    }
-    printf("%d threads joined.\n", TH_POOL_SZ * 2);
+    pthread_join (pt_1, NULL);
+    pthread_join (pt_2, NULL);
 
-    printf("Final value of data: %d.\n", data.val);
-    printf("Fin.\n");
+    info_destroy (thiz);
+
     return 0;
+}
+
+static void info_init (PrivInfo* thiz)
+{
+    return_if_fail (thiz != NULL);
+
+    thiz->end_time = time(NULL) + 10;
+
+    sem_init (&thiz->s1, 0, 1);
+    sem_init (&thiz->s2, 0, 0);
+
+    return;
+}
+
+static void info_destroy (PrivInfo* thiz)
+{
+    return_if_fail (thiz != NULL);
+
+    sem_destroy (&thiz->s1);
+    sem_destroy (&thiz->s2);
+
+    free (thiz);
+    thiz = NULL;
+
+    return;
+}
+
+static void* pthread_func_1 (PrivInfo* thiz)
+{
+    return_if_fail (thiz != NULL);
+
+    while (time(NULL) < thiz->end_time)
+    {
+        sem_wait (&thiz->s2);
+        printf ("pthread1: pthread1 get the lock./n");
+
+        sem_post (&thiz->s1);
+        printf ("pthread1: pthread1 unlock/n");
+
+        sleep (1);
+    }
+
+    return;
+}
+
+static void* pthread_func_2 (PrivInfo* thiz)
+{
+    return_if_fail (thiz != NULL);
+
+    while (time (NULL) < thiz->end_time)
+    {
+        sem_wait (&thiz->s1);
+        printf ("pthread2: pthread2 get the unlock./n");
+
+        sem_post (&thiz->s2);
+        printf ("pthread2: pthread2 unlock./n");
+
+        sleep (1);
+    }
+
+    return;
 }
