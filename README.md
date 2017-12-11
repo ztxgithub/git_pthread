@@ -372,7 +372,34 @@
       	
       	    
       	    
-	 int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize);
+	  int pthread_attr_getstack(const pthread_attr_t *attr, void **stackaddr, size_t *stacksize);
+
+	
+	 	返回值：
+          	    0-成功 
+        	
+        							
+```
+
+- 获取和设置stack size(系统帮助分配内存，自己不用管)
+
+``` c		
+  
+  	   int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize);
+  	 
+      	   
+      	 参数:
+      	    attr：属性信息,调用该函数后,*attr会被赋值
+      	    stacksize:最好是pagesize的整数倍
+      	    
+      	     
+      	返回值：
+      	    0-成功 
+      	    EINVAL：stacksize 小于 PTHREAD_STACK_MIN (16384) bytes.  或者 如果 stackaddr or
+                                 stackaddr + stacksize is not suitably aligned.
+                                
+      
+	  int pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize);
 
 	
 	 	返回值：
