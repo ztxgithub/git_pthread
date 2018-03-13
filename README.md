@@ -48,6 +48,18 @@
 
 	pthread_t pthread_self(void)
 
+    返回值 
+        非零值: 2个线程ID相等
+        零值:   2个线程ID不相等
+    
+```
+
+- 判断线程ID是否相等
+
+``` c
+
+	int pthread_equal(pthread_t t1, pthread_t t2);
+
     返回值和pthread_create函数中的 *thread是一样的
     
 ```
