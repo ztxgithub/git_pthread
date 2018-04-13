@@ -42,6 +42,104 @@
 
 ```
 
+- 线程取消
+
+``` c
+
+    概念:
+        1. 线程取消的方法是向目标线程发Cancel信号,但如何处理Cancel信号则由目标线程自己决定,或者忽略(当禁止取消时),
+           或者立即终止（当在取消点或异步模式下）、或者继续运行至Cancelation-point（取消点，下面将描述）,
+           总之由不同的Cancelation状态决定。
+        
+        2. 线程接收到CANCEL信号的缺省处理（即pthread_create()创建线程的缺省状态）是继续运行至取消点再处理（退出）,
+           或在异步方式下直接退出.一个线程处理cancel请求的退出操作相当于pthread_exit(PTHREAD_CANCELED).
+           当然线程可以通过设置为PTHREAD_CANCEL_DISABLE来拒绝处理cancel请求
+        
+        3. 线程的取消与线程的工作方式（joinable或detached）无关
+        
+        4.根据POSIX标准,pthread_join(),pthread_testcancel()、pthread_cond_wait()、 pthread_cond_timedwait()、
+          sem_wait()、sigwait()等函数以及read()、write()等会引起阻塞的系统调用都是Cancelation-point，
+          而其他pthread函数都不会引起Cancelation动作
+    注意:
+        当pthread_cancel()返回时,线程未必已经取消,可能仅仅将请求发送给目标线程,而目标线程目前没有到达取消点(
+        需要调用pthread_join(),pthread_testcancel()等函数),
+        如果要知道线程在何时中止,就需要在取消它之后调用pthread_join().有一个例外是当线程被detach后,不能这样处理：      
+      
+    (1)      
+        int pthread_cancel(pthread_t thread)
+        
+        功能:
+            发送终止信号给目标thread线程,发送成功并不意味着thread会终止。
+            
+        参数 thread: 目标thread线程
+        返回值
+            0:成功
+            非0:失败
+            
+        注意:
+            这个是在其他线程中调用,要对目标线程进行消除
+	    
+    (2)
+        int pthread_setcancelstate(int state, int *oldstate) 
+            
+        功能:
+            设置本线程对Cancel信号的反应
+            
+        参数 
+            state: PTHREAD_CANCEL_ENABLE (默认设置) 收到信号后设为CANCLED状态
+                   PTHREAD_CANCEL_DISABLE 忽略CANCEL信号继续运行
+            oldstate:如果不为NULL则存入原来的Cancel状态以便恢复
+        返回值
+            0:成功
+            非0:失败
+            
+        注意:
+             这个是在目标线程进行调用
+        
+    (3)
+         int pthread_setcanceltype(int type, int *oldtype) 
+            
+        功能:
+            设置本线程取消动作的 执行时机
+            
+        参数 
+            type: PTHREAD_CANCEL_DEFFERED  收到信号后继续运行至下一个取消点再退出
+                  PTHREAD_CANCEL_ASYCHRONOUS 立即执行取消动作（退出）
+            oldstate:如果不为NULL则存入运来的取消动作类型值。
+        返回值
+            0:成功
+            非0:失败
+            
+        注意:
+             一般不进行设置, 这个是在目标线程进行调用,
+             即使设置为PTHREAD_CANCEL_ASYCHRONOUS,也要在pthread_cancel()调用后,
+             再次调用引起Cancelation-point的函数
+            
+    (4)
+        void pthread_testcancel(void) 
+            
+        功能:
+            检查本线程是否处于Canceld状态(是否目标线程收到取消信号pthread_cancel)，如果是,则进行取消动作，
+            否则直接返回
+            
+        注意:
+             这个是在目标线程进行调用. 在这样的循环体的必经路径上应该加入pthread_testcancel()调用
+             
+    (5)
+        int pthread_kill(pthread_t thread, int sig) 
+            
+        功能:
+        
+        参数 
+            thread: 目标thread线程
+            sig:  0 : 检测一个线程是否还活着
+            
+        返回值:
+            0:成功
+                  
+
+```
+
 - 获取当前线程的id
 
 ``` c
