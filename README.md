@@ -3,15 +3,21 @@
 ## 线程相关知识
 
 - 一个线程可以独立与main函数运行,是因为有自己的资源
+
+```shell
     1.Stack pointer(栈指针)
     2.Registers(寄存器)
     3.优先级属性
     4.Set of pending and blocked signals
     5.线程特有的数据
+```
 
 - Why Pthreads?
-    1.Light Weight:轻量级,线程的创建和管理比进程开销更小(资源和启动的时间)
 
+```shell
+    1.Light Weight:轻量级,线程的创建和管理比进程开销更小(资源和启动的时间)
+```
+   
 ## 线程使用问题
 
 - 每个线程创建以后都应该调用 pthread_detach 函数，只有这样在线程结束的时候资源(线程的描述信息和stack,局部变量栈的容量)才能被释放
