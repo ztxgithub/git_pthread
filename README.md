@@ -946,6 +946,28 @@
         
 ```
 
+- 注意
+
+```c
+    1.当　pthread_cond_wait() 函数返回时要考虑到虚假唤醒(即使没有线程broadcast 或者signal条件变量，wait也可能偶尔返回)
+            实例:
+                 
+                线程一:    
+                    pthread_mutex_lock(mtx);
+                    while(deque.empty())        //　这边一定要进行 while 判断而不是 if,防止有虚假唤醒的情况
+                        pthread_cond_wait(...);
+                    deque.pop_front();
+                    pthread_mutex_unlock(mtx);
+                 
+                线程二:
+                    pthread_mutex_lock(mtx);
+                    deque.push_back(x);
+                    pthread_cond_signal(...);
+                    pthread_mutex_unlock(mtx)
+        
+
+```
+
 #### 信号量控制
 
 ##### 信号量的基本概念
