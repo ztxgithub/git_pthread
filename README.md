@@ -168,6 +168,32 @@
     
     
 ```
+
+- pthread_once(只执行一次操作)
+
+```c
+    int pthread_once(pthread_once_t *once_control, void (*init_routine)(void))
+    
+    功能:
+        使用初值为 PTHREAD_ONCE_INIT 的 pthread_once_t 变量保证 init_routine() 函数在 
+        本进程仅执行一次.
+        在多线程编程环境下,尽管 pthread_once() 调用会出现在多个线程中,init_routine() 函数仅执行一次，
+        究竟在哪个线程中执行是不定的，是由内核调度来决定。
+        
+    参数:
+        *once_control : 初始值为　PTHREAD_ONCE_INIT
+        init_routine　: 要运行的函数
+     
+    返回值:
+         0: 成功
+        
+    注意:
+        如果 pthread_once_t 的初值不是 PTHREAD_ONCE_INIT（Linux Threads定义为0）， pthread_once() 
+        的行为就会不正常。
+        
+         pthread_once() is not a cancellation point(不是取消点)
+
+```
 				
 - 当线程结束时释放对应的资源
 
@@ -208,9 +234,7 @@
 	    EDEADLK: 线程死锁,例如２个线程相互调用pthread_join(),或者pthread_join()指定的参数是自己
 	    EINVAL: 指定的线程不是joinable 线程,另外的线程已经调用pthread_join()指定它了(重复调用同一个线程)
 	    ESRCH: 不存在pthread_t指定的ID
-	    
-
-		
+	    	
 ```
 
 - 线程属性初始化和销毁
@@ -828,6 +852,16 @@
     		失败: 非 0 错误码
     	
         
+```
+
+- 读写锁注意事项
+
+```shell
+    1.一般不建议使用读写锁，理由如下
+            (1) 在后期维护阶段，很容易将误将读锁的临界区进行修改
+            (2) 读写锁的开销要比 mutex 要大(因为要维护 reader 的数量)，如果临界区很小，则读写锁不一定比
+            　　　mutex 快
+            
 ```
 
 
