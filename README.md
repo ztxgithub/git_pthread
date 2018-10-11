@@ -20,13 +20,83 @@
    
 ## 线程使用问题
 
-- 每个线程创建以后都应该调用 pthread_detach 函数，只有这样在线程结束的时候资源(线程的描述信息和stack,局部变量栈的容量)才能被释放
+```shell
+    1. 每个线程创建以后都应该调用 pthread_detach 函数，只有这样在线程结束的时候资源
+        (线程的描述信息和stack,局部变量栈的容量)才能被释放
 
-- 在每个线程还没有结束时，main函数不能结束(不能调用retrun或则_exit()),可通过在main中最后写pthread_exit(NULL),阻塞等待其他线程创建好完成.
+    2. 在每个线程还没有结束时，main函数不能结束(不能调用retrun或则_exit()),可通过在main中最后写pthread_exit(NULL),
+       阻塞等待其他线程创建好完成.
 
-- 一个进程创建多个线程,那么多个线程将共用这个进程的栈大小(8M)以及其他资源
+    3. 一个进程创建多个线程,那么多个线程将共用这个进程的栈大小(8M)以及其他资源
 
-- 创建线程时要注意最多的线程数量和线程栈大小
+    4.创建线程时要注意最多的线程数量和线程栈大小
+    
+    5. 
+        pthread_t 并不适合用做线程的标识符
+        glibc 将　pthread_t 当成结构体指针，指向一块动态分配的内存，这部分内存是反复使用．
+    　　只保证同一进程内，同一时间各个线程 id 不同，不能保证同一进程内先后线程有不同的 id (第一个线程运行完后，再运行
+    　　第二个线程，它们的 pthread_t 可能相同)．　多个进程间的线程 id 也可能相同
+    
+            例如：
+                   pthread_t t1;
+            　　　　pthrad_create(&t1, NULL, Func, NULL);
+                   pthread_join(t1, NULL);
+                   
+                   pthread_t t2;
+           　　　　 pthrad_create(&t2, NULL, Func, NULL);
+                   pthread_join(t2, NULL);
+                   
+                   // t1 的值可能等于 t2 的值
+                   
+    6. 使用 gettid() 系统调用返回值作为线程 id(可以考虑使用 muduo::CurrentThread::tid() 进行封装)
+        理由如下：
+            (1) 类型为 pid_t , 是个小整数，便于在日志中打印
+            (2) 直接表示内核的任务调度 id, /proc/tid 或则 /proc/pid/task/tid
+            (3) 在其他的系统工具也能定位到某一具体的线程，例如 top 可以按线程列出任务，可以找出 CPU 使用率最高的
+            　　 线程 id.
+            (4) 0 为非法值，第一个进程的 pid 是 1
+            
+    7.线程数最好 CPU 的数量一致，最好在程序的初始化阶段创建全部工作线程，在程序的运行期间不再创建和销毁，
+    　可以使用 muduo::ThreadPool 和 muduo::EvnetLoop
+    
+    8.最好不用强行在外部终止线程的做法，这样会导致线程没来的及清除资源，也没机会及时释放锁的占用
+    9. __thread 是GCC内置的线程局部存储设施, __thread变量每一个线程有一份独立实体，各个线程的值互不干扰
+       __thread 使用规则: 只能修饰POD类型(类似整型指针的标量，不带自定义的构造、拷贝、赋值、析构的类型，
+                                      二进制内容可以任意复制 memset,memcpy,且内容可以复原)，
+                        不能修饰class类型，因为无法自动调用构造函数和析构函数，可以用于修饰全局变量，函数内的静态变量，
+                        不能修饰函数(包括主函数)的局部变量 或者 class的普通成员变量，
+                        且__thread变量值只能初始化为编译器常量(值在编译器就可以确定 例如const int i=5)
+                        
+       
+        const int i=5;
+        __thread int var=i;
+        
+        //__thread int var=5;//
+        //以上两种方式效果一样
+       
+        void* worker1(void* arg);
+        void* worker2(void* arg);
+        int main(){
+            pthread_t pid1,pid2;
+            __thread int temp=5;  // 错误, 函数内的局部变量不能申明为 __thread
+            static __thread  int temp=10;// 正确, 修饰函数内的static变量
+            pthread_create(&pid1,NULL,worker1,NULL);
+            pthread_create(&pid2,NULL,worker2,NULL);
+            pthread_join(pid1,NULL);
+            pthread_join(pid2,NULL);
+            cout<<temp<<endl;//输出10
+            return 0;
+        }
+        void* worker1(void* arg){
+            cout<<++var<<endl;//输出 6  var 被定义为 __thread ,代表各个线程之间变量是独立的
+        }
+        void* worker2(void* arg){
+            sleep(1);//等待线程1改变var值，验证是否影响线程2
+            cout<<++var<<endl;//输出6
+        }
+
+
+```
 
 ## 编码技巧
 
@@ -179,6 +249,9 @@
         本进程仅执行一次.
         在多线程编程环境下,尽管 pthread_once() 调用会出现在多个线程中,init_routine() 函数仅执行一次，
         究竟在哪个线程中执行是不定的，是由内核调度来决定。
+        
+        pthread_once() 行为和 pthread_create() 不一样，会同步调用函数，pthread_once()之后的语句会被阻塞
+        直到 pthread_once()　注册函数运行完
         
     参数:
         *once_control : 初始值为　PTHREAD_ONCE_INIT
