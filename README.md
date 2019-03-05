@@ -1175,3 +1175,67 @@
         失败: -1 
                            
 ```
+
+### 多线程下变量-原子操作 __sync_fetch_and_add
+
+```c
+
+    type __sync_fetch_and_add (type *ptr, type value);
+    type __sync_fetch_and_sub (type *ptr, type value);
+    
+    参数：
+            ptr：type只能是int long  ，long long（及对应unsigned类型）
+    
+    在多线程中,要对临界资源进行互斥(原子操作)
+    
+    type __sync_fetch_and_add (type *ptr, type value) 
+    等于
+         　pthread_mutex_lock(&count_lock);
+          global_int++;
+          pthread_mutex_unlock(&count_lock);
+          
+    但是　type __sync_fetch_and_add (type *ptr, type value) 效率比互斥锁要高
+    
+     __sync_fetch_and_add()函数与　 __sync_add_and_fetch()函数的区别：
+     
+        count = 4
+        count = __sync_fetch_and_add(&count, 1)    返回值是4 ,跟　i++类似
+        
+        count = 4
+        count = __sync_add_and_fetch(&count, 1)    返回值是５ ,跟　++i类似
+```
+
+## 乐观锁和悲观锁
+
+```shell
+    1. 悲观锁(Pessimistic Lock): 每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，
+                               这样别人想拿这个数据就会阻塞直到它拿到锁. Java synchronized 就属于悲观锁的一种实现
+    2. 乐观锁(Optimistic Lock): 每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在提交更新的时候会判断一下在此期间别人
+                               有没有去更新这个数据。乐观锁适用于读多写少的应用场景，这样可以提高吞吐量。
+            乐观锁实现的 2 中方式:
+                A. 使用数据版本(Version)记录机制实现(常用)。为数据增加一个版本标识，通过为数据库表增加一个数字类型的 “version” 字段
+                　　来实现。当读取数据时，将 version 字段的值一同读出，数据每更新一次，对此 version 值加一。
+                   当我们提交更新的时候，判断数据库表对应记录的当前版本信息与第一次取出来的 version 值进行比对，
+                   如果数据库表当前版本号与第一次取出来的 version 值相等，则予以更新，否则认为是过期数据。
+                B. 使用时间戳(timestamp), 在更新提交的时候检查当前数据库中数据的时间戳和自己更新前取到的时间戳进行对比，
+                   如果一致则OK，否则就是版本冲突
+                   
+```
+
+## 分布式锁
+
+```shell
+    1. 分布式锁: 分为基于 Redis 和基于 Zookeeper
+    2. 基于 Redis 的分布式锁
+            在任意时刻，只有一个客户端可以获得锁(排他性), Redis 的锁服务的做法是通过超时时间来释放锁, 所以 
+            客户端最终一定可以获得锁.
+    3. Redis 分布式锁服务的问题
+           (1) Redis 的锁服务超时释放锁导致的问题．例如，A 服务先得到锁，但 A 服务因为 IO 等待阻塞了，而此时因为锁超时
+           　　导致被释放(A 服务还不知道)，这时 B 服务成功的获得锁，要对其管理的资源进行操作，刚好此时 A 服务右就绪，继续
+           　　处理数据，这时候对应的数据就乱了
+           (2) 解决方案一: 乐观锁机制(需要一个版本号排它)，该锁的版本号是由 Redis 提供的
+                           当 A 服务获得锁时，会得到一个锁的版本号(Version:76),该锁的版本号是由 Redis 提供的，
+                           A 服务因为 IO 等待阻塞了，而此时因为锁超时致被释放,B 服务成功的获得锁,
+                           B 服务得到更高的该锁的版本号(Version:77), 此时对资源进行操作需要
+                           验证锁的版本号是不是比之前要高，如果要高则运行进行操作，如果低的话则不允许操作．
+```
